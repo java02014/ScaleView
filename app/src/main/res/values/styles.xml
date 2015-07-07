@@ -5,4 +5,13 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <declare-styleable name="ScaleViewTheme">
+        <attr name="scaleBackground" format="color"></attr>
+        <attr name="scaleSecondaryBackground" format="color"></attr>
+        <attr name="scaleNumberColor" format="color"></attr>
+        <attr name="scaleTextColor" format="color"></attr>
+        <attr name="scaleTextSize" format="dimension"></attr>
+        <attr name="scaleNumberSize" format="dimension"></attr>
+    </declare-styleable>
+
 </resources>

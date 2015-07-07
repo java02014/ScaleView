@@ -1,17 +1,26 @@
 package com.scorpioneal.scaleview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
+ * TODO 现在只支持均分的，不均分暂时不支持
+ * TODO 异常数据还没做处理
+ * TODO 支持手势操作
+ * TODO 适配
+ * TODO 表针可替换
  * Created by ScorpioNeal on 15/7/6.
  */
 public class ScaleView extends View {
+
+    private static final String TAG = ScaleView.class.getSimpleName();
 
     private float mMaxValue = 180; //最大值
     private float mMinValue = 0; //最小值
@@ -40,6 +49,13 @@ public class ScaleView extends View {
 
     public static final float VIEW_PADDING = 30;
 
+    private int mScaleBackgroundColor = Color.GRAY;
+    private int mScaleSecondaryBackgroundColor = Color.CYAN;
+    private int mScaleNumberColor = Color.BLACK;
+    private int mScaleTextColor = Color.BLACK;
+    private float mScaleTextSize = 50;
+    private float mScaleNumberSize = 45;
+
     public ScaleView(Context context) {
         this(context, null);
     }
@@ -57,34 +73,42 @@ public class ScaleView extends View {
         mScaleNumPaint = new Paint();
         mDescripPaint = new Paint();
 
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScaleViewTheme);
+        mScaleBackgroundColor = a.getColor(R.styleable.ScaleViewTheme_scaleBackground, Color.GRAY);
+        mScaleSecondaryBackgroundColor = a.getColor(R.styleable.ScaleViewTheme_scaleSecondaryBackground, Color.CYAN);
+        mScaleNumberColor = a.getColor(R.styleable.ScaleViewTheme_scaleNumberColor, Color.BLACK);
+        mScaleTextColor = a.getColor(R.styleable.ScaleViewTheme_scaleTextColor, Color.BLACK);
+        mScaleTextSize = a.getDimension(R.styleable.ScaleViewTheme_scaleTextSize, 50);
+        mScaleNumberSize = a.getDimension(R.styleable.ScaleViewTheme_scaleNumberSize, 45);
+        a.recycle();
+
         initPaint();
     }
 
     private void initPaint() {
 
-        mScaleBgPaint.setColor(Color.GRAY);
+        mScaleBgPaint.setColor(mScaleBackgroundColor);
         mScaleBgPaint.setStrokeWidth(12);
         mScaleBgPaint.setAntiAlias(true);
         mScaleBgPaint.setStyle(Paint.Style.STROKE);
 
-        mScalePaint.setColor(Color.CYAN);
         mScalePaint.setStrokeWidth(8);
         mScalePaint.setAntiAlias(true);
         mScalePaint.setStyle(Paint.Style.STROKE);
 
-        mScaleProgressPaint.setColor(Color.CYAN);
+        mScaleProgressPaint.setColor(mScaleSecondaryBackgroundColor);
         mScaleProgressPaint.setStrokeWidth(12);
         mScaleProgressPaint.setAntiAlias(true);
         mScaleProgressPaint.setStyle(Paint.Style.STROKE);
 
-        mScaleNumPaint.setColor(Color.BLACK);
+        mScaleNumPaint.setColor(mScaleNumberColor);
         mScaleNumPaint.setStrokeWidth(1);
         mScaleNumPaint.setAntiAlias(true);
-        mScaleNumPaint.setTextSize(45);
+        mScaleNumPaint.setTextSize(mScaleNumberSize);
 
-        mDescripPaint.setColor(Color.BLACK);
+        mDescripPaint.setColor(mScaleTextColor);
         mDescripPaint.setAntiAlias(true);
-        mDescripPaint.setTextSize(50);
+        mDescripPaint.setTextSize(mScaleTextSize);
     }
 
     @Override
@@ -119,9 +143,9 @@ public class ScaleView extends View {
             float angle = mStartAngle + i * (mEndAngle - mStartAngle) / (count - 1);
 
             if(angle <= mSweepAngle + mStartAngle){
-                mScalePaint.setColor(Color.CYAN);
+                mScalePaint.setColor(mScaleSecondaryBackgroundColor);
             }else {
-                mScalePaint.setColor(Color.GRAY);
+                mScalePaint.setColor(mScaleBackgroundColor);
             }
 
             float angleValue = (float)(angle / 180 * Math.PI);
@@ -189,7 +213,11 @@ public class ScaleView extends View {
      * @param value
      */
     public void setShownValue(float value){
-        float sweapAngle = (value - mMinValue) * (mEndAngle - mStartAngle) / (mMaxValue - mMinValue) + mStartAngle;
+        float sweapAngle = (value - mMinValue) * (mEndAngle - mStartAngle) / (mMaxValue - mMinValue);
+        Log.d(TAG, "value " + value + " mMinValue " + mMinValue);
+        Log.d(TAG, "mEndAngle " + mEndAngle + " mStartAngle " + mStartAngle);
+        Log.d(TAG, "mMaxValue " + mMaxValue);
+        Log.d(TAG, "sweapAngle" + sweapAngle);
         mSweepAngle = sweapAngle;
         invalidate();
     }
