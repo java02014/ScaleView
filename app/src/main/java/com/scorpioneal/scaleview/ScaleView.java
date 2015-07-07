@@ -1,0 +1,197 @@
+package com.scorpioneal.scaleview;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.util.AttributeSet;
+import android.view.View;
+
+/**
+ * Created by ScorpioNeal on 15/7/6.
+ */
+public class ScaleView extends View {
+
+    private float mMaxValue = 180; //最大值
+    private float mMinValue = 0; //最小值
+
+    private float mStartAngle = 135; //开始角度
+    private float mEndAngle = 405;  //结束角度
+    private float mSweepAngle = 130; //扫过的角度
+
+    private Paint mScaleProgressPaint; //进度条
+    private Paint mScaleBgPaint; //背景
+    private Paint mScalePaint; //刻度
+    private Paint mScaleNumPaint;//刻度数字
+    private Paint mDescripPaint;//描述文字
+
+    private float mViewWidth;//in px
+    private float mViewHeight;//in px
+
+    private float mScaleLength = 30;//刻度的长度
+    private float mScalePadding = 75;//刻度和圆周的距离
+
+    private int count = 7; //7个刻度
+
+    private float mRadius;
+
+    private String mShowText = "测量中...";
+
+    public static final float VIEW_PADDING = 30;
+
+    public ScaleView(Context context) {
+        this(context, null);
+    }
+
+    public ScaleView(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public ScaleView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+
+        mScaleProgressPaint = new Paint();
+        mScaleBgPaint = new Paint();
+        mScalePaint = new Paint();
+        mScaleNumPaint = new Paint();
+        mDescripPaint = new Paint();
+
+        initPaint();
+    }
+
+    private void initPaint() {
+
+        mScaleBgPaint.setColor(Color.GRAY);
+        mScaleBgPaint.setStrokeWidth(12);
+        mScaleBgPaint.setAntiAlias(true);
+        mScaleBgPaint.setStyle(Paint.Style.STROKE);
+
+        mScalePaint.setColor(Color.CYAN);
+        mScalePaint.setStrokeWidth(8);
+        mScalePaint.setAntiAlias(true);
+        mScalePaint.setStyle(Paint.Style.STROKE);
+
+        mScaleProgressPaint.setColor(Color.CYAN);
+        mScaleProgressPaint.setStrokeWidth(12);
+        mScaleProgressPaint.setAntiAlias(true);
+        mScaleProgressPaint.setStyle(Paint.Style.STROKE);
+
+        mScaleNumPaint.setColor(Color.BLACK);
+        mScaleNumPaint.setStrokeWidth(1);
+        mScaleNumPaint.setAntiAlias(true);
+        mScaleNumPaint.setTextSize(45);
+
+        mDescripPaint.setColor(Color.BLACK);
+        mDescripPaint.setAntiAlias(true);
+        mDescripPaint.setTextSize(50);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        mViewHeight = getMeasuredHeight() - VIEW_PADDING * 2;
+
+        mViewWidth = getMeasuredWidth() - VIEW_PADDING * 2;
+
+        mRadius = Math.min(mViewHeight, mViewWidth) / 2;
+    }
+
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        RectF circleRect = new RectF(VIEW_PADDING, VIEW_PADDING, VIEW_PADDING+ mRadius * 2, VIEW_PADDING + mRadius * 2);
+        //画背景大圈
+        canvas.drawArc(circleRect, mStartAngle, mEndAngle - mStartAngle, false, mScaleBgPaint);
+        //画指示进度的圈
+        canvas.drawArc(circleRect, mStartAngle, mSweepAngle, false, mScaleProgressPaint);
+
+        //圆心
+        float originX = mRadius + VIEW_PADDING;
+        float originY = mRadius + VIEW_PADDING;
+
+        //画刻度
+        for(int i = 0; i < count; i++) {
+            //总共7个刻度
+            float angle = mStartAngle + i * (mEndAngle - mStartAngle) / (count - 1);
+
+            if(angle <= mSweepAngle + mStartAngle){
+                mScalePaint.setColor(Color.CYAN);
+            }else {
+                mScalePaint.setColor(Color.GRAY);
+            }
+
+            float angleValue = (float)(angle / 180 * Math.PI);
+            float startX = (float)(originX + (mRadius - mScaleLength) * Math.cos(angleValue));
+            float startY = (float)(originY + (mRadius - mScaleLength) * Math.sin(angleValue));
+            float endX   = (float)(originX + mRadius * Math.cos(angleValue));
+            float endY   = (float)(originY + mRadius * Math.sin(angleValue));
+            canvas.drawLine(startX, startY, endX, endY, mScalePaint);
+
+            //画刻度的数字
+            float textWidth = mScaleNumPaint.measureText((int)angle+"");
+            float textHeight = 20; //TODO a better way to measure text height
+
+            float x = (float)(startX - mScalePadding * Math.cos(angleValue)) - textWidth / 2;
+            float y = (float)(startY - mScalePadding * Math.sin(angleValue)) + textHeight / 2; //坐标系不同，所以要minus
+
+            float value = mMinValue + (angle - mStartAngle) * (mMaxValue - mMinValue) / (mEndAngle - mStartAngle);
+            canvas.drawText((int)value + "", x, y, mScaleNumPaint);
+        }
+
+        //画中下方的文字
+        float txtWidth = mDescripPaint.measureText(mShowText);
+        //大约在3/4的下方
+        canvas.drawText(mShowText, VIEW_PADDING + mRadius - txtWidth / 2, VIEW_PADDING + 7 * mRadius / 4, mDescripPaint);
+
+        //画指针 TODO use bitmap to replace line
+        float angleValue = (float)((mStartAngle + mSweepAngle) / 180 * Math.PI);
+        canvas.drawLine(originX, originY, (float)(originX + (mRadius - 120) * Math.cos(angleValue)), (float)(originY + (mRadius - 120) * Math.sin(angleValue)), mScaleProgressPaint);
+
+    }
+
+    /**
+     * 设置显示的文本内容
+     * @param message
+     */
+    public void setShowText(String message){
+        mShowText = message;
+        invalidate();
+    }
+
+    /**
+     * 设置显示的取值区间
+     * @param fromValue
+     * @param toValue
+     */
+    public void setValueRegion(float fromValue, float toValue){
+        mMinValue = fromValue;
+        mMaxValue = toValue;
+        invalidate();
+    }
+
+    /**
+     * 设置角度区间
+     * @param fromAngle
+     * @param toAngle
+     */
+    public void setAngleRegion(float fromAngle, float toAngle){
+        mStartAngle = fromAngle;
+        mEndAngle = toAngle;
+        invalidate();
+    }
+
+    /**
+     * 设置显示的值
+     * @param value
+     */
+    public void setShownValue(float value){
+        float sweapAngle = (value - mMinValue) * (mEndAngle - mStartAngle) / (mMaxValue - mMinValue) + mStartAngle;
+        mSweepAngle = sweapAngle;
+        invalidate();
+    }
+
+}
