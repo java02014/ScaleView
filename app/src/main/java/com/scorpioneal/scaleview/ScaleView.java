@@ -1,5 +1,7 @@
 package com.scorpioneal.scaleview;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -9,6 +11,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.BounceInterpolator;
 
 /**
  * TODO 现在只支持均分的，不均分暂时不支持
@@ -208,18 +211,61 @@ public class ScaleView extends View {
         invalidate();
     }
 
+    private float lastShownValue = 0f;
     /**
      * 设置显示的值
      * @param value
      */
-    public void setShownValue(float value){
-        float sweapAngle = (value - mMinValue) * (mEndAngle - mStartAngle) / (mMaxValue - mMinValue);
-        Log.d(TAG, "value " + value + " mMinValue " + mMinValue);
-        Log.d(TAG, "mEndAngle " + mEndAngle + " mStartAngle " + mStartAngle);
-        Log.d(TAG, "mMaxValue " + mMaxValue);
-        Log.d(TAG, "sweapAngle" + sweapAngle);
-        mSweepAngle = sweapAngle;
-        invalidate();
+    public void setShownValue(final float value){
+
+        ValueAnimator valueAnimator = new ValueAnimator().ofFloat(lastShownValue, value);
+        valueAnimator.setInterpolator(new MyIntepolator());
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float value = (float)animation.getAnimatedValue();
+                Log.d(TAG, "value : " + value);
+                float sweapAngle = (value - mMinValue) * (mEndAngle - mStartAngle) / (mMaxValue - mMinValue);
+                mSweepAngle = sweapAngle;
+                invalidate();
+            }
+        });
+        valueAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                lastShownValue = value;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        valueAnimator.setDuration(400).start();
+    }
+
+    class MyIntepolator extends BounceInterpolator {
+        private float bounce(float t){
+            return t * t * 8.0f;
+        }
+        @Override
+        public float getInterpolation(float t) {
+//            t *= 1.1226f;
+            if (t < 0.3535f) return bounce(t);
+            else if (t < 0.7408f) return bounce(t - 0.54719f) + 0.7f;
+            else if (t < 0.9644f) return bounce(t - 0.8526f) + 0.9f;
+            else return bounce(t - 1.0435f) + 0.95f;
+        }
     }
 
 }
