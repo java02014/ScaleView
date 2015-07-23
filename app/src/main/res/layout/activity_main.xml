@@ -14,4 +14,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/change_color_btn"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:text="颜色"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/change_value_btn"
+            android:text="数值"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/change_range_btn"
+            android:text="范围"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/change_angle_btn"
+            android:text="角度"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
 </RelativeLayout>

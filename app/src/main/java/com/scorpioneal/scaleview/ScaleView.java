@@ -130,6 +130,9 @@ public class ScaleView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        mScaleBgPaint.setColor(mScaleBackgroundColor);
+        mScaleProgressPaint.setColor(mScaleSecondaryBackgroundColor);
+
         RectF circleRect = new RectF(VIEW_PADDING, VIEW_PADDING, VIEW_PADDING+ mRadius * 2, VIEW_PADDING + mRadius * 2);
         //画背景大圈
         canvas.drawArc(circleRect, mStartAngle, mEndAngle - mStartAngle, false, mScaleBgPaint);
@@ -216,9 +219,15 @@ public class ScaleView extends View {
      * 设置显示的值
      * @param value
      */
-    public void setShownValue(final float value){
-
-        ValueAnimator valueAnimator = new ValueAnimator().ofFloat(lastShownValue, value);
+    public void setShownValue(float value){
+        if(value - mMinValue < 0.0000001f) {
+            value = mMinValue;
+        }
+        if(value - mMaxValue > 0.0000001f) {
+            value = mMaxValue;
+        }
+        final float v = value;
+        ValueAnimator valueAnimator = new ValueAnimator().ofFloat(lastShownValue, v);
         valueAnimator.setInterpolator(new MyIntepolator());
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -238,7 +247,7 @@ public class ScaleView extends View {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                lastShownValue = value;
+                lastShownValue = v;
             }
 
             @Override
@@ -268,4 +277,46 @@ public class ScaleView extends View {
         }
     }
 
+    public float getMinValue() {
+        return mMinValue;
+    }
+
+    public float getMaxValue() {
+        return mMaxValue;
+    }
+
+    /**
+     * 设置刻度颜色
+     * @param mScaleBackgroundColor
+     */
+    public void setScaleBackgroundColor(int mScaleBackgroundColor) {
+        this.mScaleBackgroundColor = mScaleBackgroundColor;
+        invalidate();
+    }
+
+    /**
+     * 设置进度条颜色
+     * @param mScaleSecondaryBackgroundColor
+     */
+    public void setScaleSecondaryBackgroundColor(int mScaleSecondaryBackgroundColor) {
+        this.mScaleSecondaryBackgroundColor = mScaleSecondaryBackgroundColor;
+        invalidate();
+    }
+
+    /**
+     * 设置最大值和最小值
+     * @param minValue
+     * @param maxValue
+     */
+    public void setMinMaxValue(float minValue, float maxValue) {
+        this.mMinValue = Math.min(minValue, maxValue);
+        this.mMaxValue = Math.max(minValue, maxValue);
+        invalidate();
+    }
+
+    public void setStartEndAngle(float startAngle, float endAngle) {
+        this.mStartAngle = Math.min(startAngle, endAngle);
+        this.mEndAngle = Math.max(startAngle, endAngle);
+        invalidate();
+    }
 }
