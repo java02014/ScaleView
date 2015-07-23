@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mScaleView.setScaleBackgroundColor(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
                 mScaleView.setScaleSecondaryBackgroundColor(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
                 mScaleView.setScaleNumberColor(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
+                mScaleView.setScaleTextColor(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
                 break;
             case R.id.change_scale_btn:
                 mScaleView.setCount(mRandom.nextInt(10));

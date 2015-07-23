@@ -7,6 +7,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -90,7 +91,6 @@ public class ScaleView extends View {
 
     private void initPaint() {
 
-        mScaleBgPaint.setColor(mScaleBackgroundColor);
         mScaleBgPaint.setStrokeWidth(12);
         mScaleBgPaint.setAntiAlias(true);
         mScaleBgPaint.setStyle(Paint.Style.STROKE);
@@ -99,17 +99,14 @@ public class ScaleView extends View {
         mScalePaint.setAntiAlias(true);
         mScalePaint.setStyle(Paint.Style.STROKE);
 
-        mScaleProgressPaint.setColor(mScaleSecondaryBackgroundColor);
         mScaleProgressPaint.setStrokeWidth(12);
         mScaleProgressPaint.setAntiAlias(true);
         mScaleProgressPaint.setStyle(Paint.Style.STROKE);
 
-        mScaleNumPaint.setColor(mScaleNumberColor);
         mScaleNumPaint.setStrokeWidth(1);
         mScaleNumPaint.setAntiAlias(true);
         mScaleNumPaint.setTextSize(mScaleNumberSize);
 
-        mDescripPaint.setColor(mScaleTextColor);
         mDescripPaint.setAntiAlias(true);
         mDescripPaint.setTextSize(mScaleTextSize);
     }
@@ -133,6 +130,7 @@ public class ScaleView extends View {
         mScaleBgPaint.setColor(mScaleBackgroundColor);
         mScaleProgressPaint.setColor(mScaleSecondaryBackgroundColor);
         mScaleNumPaint.setColor(mScaleNumberColor);
+        mDescripPaint.setColor(mScaleTextColor);
 
         RectF circleRect = new RectF(VIEW_PADDING, VIEW_PADDING, VIEW_PADDING+ mRadius * 2, VIEW_PADDING + mRadius * 2);
         //画背景大圈
@@ -164,7 +162,7 @@ public class ScaleView extends View {
 
             //画刻度的数字
             float textWidth = mScaleNumPaint.measureText((int)angle+"");
-            float textHeight = 20; //TODO a better way to measure text height
+            float textHeight = calcTextHeight(mScaleNumPaint, (int)angle+"");
 
             float x = (float)(startX - mScalePadding * Math.cos(angleValue)) - textWidth / 2;
             float y = (float)(startY - mScalePadding * Math.sin(angleValue)) + textHeight / 2; //坐标系不同，所以要minus
@@ -315,19 +313,48 @@ public class ScaleView extends View {
         invalidate();
     }
 
+    /**
+     * 设置起止角度 3点为0度
+     * @param startAngle
+     * @param endAngle
+     */
     public void setStartEndAngle(float startAngle, float endAngle) {
         this.mStartAngle = Math.min(startAngle, endAngle);
         this.mEndAngle = Math.max(startAngle, endAngle);
         invalidate();
     }
 
+    /**
+     * 设置刻度数
+     * @param count
+     */
     public void setCount(int count) {
         this.count = count;
         invalidate();
     }
 
+    /**
+     * 设置刻度颜色
+     * @param mScaleNumberColor
+     */
     public void setScaleNumberColor(int mScaleNumberColor) {
         this.mScaleNumberColor = mScaleNumberColor;
         invalidate();
+    }
+
+    /**
+     * 设置显示的数字的颜色
+     * @param mScaleTextColor
+     */
+    public void setScaleTextColor(int mScaleTextColor) {
+        this.mScaleTextColor = mScaleTextColor;
+        invalidate();
+    }
+
+    private int calcTextHeight(Paint paint, String demoText) {
+
+        Rect r = new Rect();
+        paint.getTextBounds(demoText, 0, demoText.length(), r);
+        return r.height();
     }
 }
