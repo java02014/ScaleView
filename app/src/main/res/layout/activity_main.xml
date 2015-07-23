@@ -46,6 +46,13 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/change_scale_btn"
+            android:text="刻度"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
 </RelativeLayout>

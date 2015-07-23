@@ -132,6 +132,7 @@ public class ScaleView extends View {
 
         mScaleBgPaint.setColor(mScaleBackgroundColor);
         mScaleProgressPaint.setColor(mScaleSecondaryBackgroundColor);
+        mScaleNumPaint.setColor(mScaleNumberColor);
 
         RectF circleRect = new RectF(VIEW_PADDING, VIEW_PADDING, VIEW_PADDING+ mRadius * 2, VIEW_PADDING + mRadius * 2);
         //画背景大圈
@@ -317,6 +318,16 @@ public class ScaleView extends View {
     public void setStartEndAngle(float startAngle, float endAngle) {
         this.mStartAngle = Math.min(startAngle, endAngle);
         this.mEndAngle = Math.max(startAngle, endAngle);
+        invalidate();
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+        invalidate();
+    }
+
+    public void setScaleNumberColor(int mScaleNumberColor) {
+        this.mScaleNumberColor = mScaleNumberColor;
         invalidate();
     }
 }

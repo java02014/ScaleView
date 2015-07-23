@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ScaleView mScaleView;
     private int i = 1;
 
-    private Button mValueBtn, mRangeBtn, mAngelBtn, mColorBtn;
+    private Button mValueBtn, mRangeBtn, mAngelBtn, mColorBtn, mScaleBtn;
 
     private Random mRandom;
 
@@ -33,11 +33,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mRangeBtn = (Button)findViewById(R.id.change_range_btn);
         mAngelBtn = (Button)findViewById(R.id.change_angle_btn);
         mColorBtn = (Button)findViewById(R.id.change_color_btn);
+        mScaleBtn = (Button)findViewById(R.id.change_scale_btn);
 
         mValueBtn.setOnClickListener(this);
         mRangeBtn.setOnClickListener(this);
         mAngelBtn.setOnClickListener(this);
         mColorBtn.setOnClickListener(this);
+        mScaleBtn.setOnClickListener(this);
 
 
         mRandom = new Random();
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.change_angle_btn:
                 flag = !flag;
                 if(flag) {
-                    mScaleView.setStartEndAngle(90, 450);
+                    mScaleView.setStartEndAngle(180, 360);
                 } else {
                     mScaleView.setStartEndAngle(135, 405);
                 }
@@ -74,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.change_color_btn:
                 mScaleView.setScaleBackgroundColor(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
                 mScaleView.setScaleSecondaryBackgroundColor(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
+                mScaleView.setScaleNumberColor(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
+                break;
+            case R.id.change_scale_btn:
+                mScaleView.setCount(mRandom.nextInt(10));
                 break;
         }
     }
