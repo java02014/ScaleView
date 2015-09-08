@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 
+
 /**
  * TODO 现在只支持均分的，不均分暂时不支持
  * TODO 异常数据还没做处理
